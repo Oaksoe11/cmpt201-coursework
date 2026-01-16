@@ -1,0 +1,39 @@
+#define _POSIX_C_SOURCE 200809L
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main(void) {
+  char *buffer = NULL;
+  size_t bufsize = 0;
+
+  while (1) {
+    printf("Please enter some text: ");
+    fflush(stdout);
+
+    ssize_t len = getline(&buffer, &bufsize, stdin);
+    if (len < 0) {
+      perror("getline");
+      free(buffer);
+      return 1;
+    }
+
+    /* user pressed just ENTER */
+    if (len == 1) {
+      break;
+    }
+
+    printf("Tokens:\n");
+
+    char *saveptr;
+    char *token = strtok_r(buffer, " ", &saveptr);
+
+    while (token != NULL) {
+      printf("  %s\n", token);
+      token = strtok_r(NULL, " ", &saveptr);
+    }
+  }
+
+  free(buffer);
+  return 0;
+}
